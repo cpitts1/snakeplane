@@ -31,8 +31,8 @@
 		Alteryx.Gui.BeforeLoad = function (manager, AlteryxDataItems, json) {
 			var alphaFloatSelector = new AlteryxDataItems.ConstrainedFloat('Value')
 			alphaFloatSelector.setMin(0)
-			alphaFloatSelector.setMax(1)
-			alphaFloatSelector.setStep(0.01)
+			alphaFloatSelector.setMax(5)
+			alphaFloatSelector.setStep(0.1)
 
 			// Add and bind the data items to the selector widgets
 			manager.addDataItem(alphaFloatSelector)

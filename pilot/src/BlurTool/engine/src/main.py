@@ -17,6 +17,8 @@ import AlteryxPythonSDK as sdk
 
 import pandas as pd
 
+from scipy import ndimage
+
 from snakeplane.plugin_factory import PluginFactory
 
 # Initialization of the plug in factory, used for making the AyxPlugin class
@@ -32,10 +34,6 @@ def init(input_mgr, user_data, logger):
     # Display info on the selected value
     logger.display_info_msg(f"The value selected is {user_data.val}")
 
-    # Throw a warning if greater than 0.5
-    if user_data.val > 0.5:
-        logger.display_warn_msg(f"The value selected is greater than 0.5")
-
     return True
 
 
@@ -47,12 +45,13 @@ def process_data(input_mgr, output_mgr, user_data, logger):
 
     # Get the data out of it in the form of a dataframe
     input_data = input_anchor.data
+    blur_array = input_data.values
 
-    # Append a column of zeros
-    df = pd.DataFrame({"New Column": [user_data.val] * input_data.shape[0]})
+    # Blur the data using the user's input for sigma
+    output_array = ndimage.gaussian_filter(blur_array, sigma=user_data.val)
 
-    # Create output dataframe by appending our new column to the input data
-    output_data = input_data.join(df)
+    # Create output dataframe by putting new array in a dataframe form
+    output_data = pd.DataFrame(output_array)
 
     # Set the output data for the Output anchor
     data_out = output_mgr["Output"]
@@ -61,8 +60,7 @@ def process_data(input_mgr, output_mgr, user_data, logger):
 
 @factory.build_metadata
 def build_metadata(input_mgr, output_mgr, user_data, logger):
-    """Build metadata for example source tool."""
-    # Append a new column to the incoming metadata
+    """Build metadata for blur tool."""
 
     # Grab the input anchor connection
     input_anchor = input_mgr["Input"][0]
@@ -72,9 +70,6 @@ def build_metadata(input_mgr, output_mgr, user_data, logger):
 
     # Reassign to the output metadata variable
     output_metadata = input_metadata
-
-    # Append a new column to the metadata
-    output_metadata.add_column("Test", sdk.FieldType.float)
 
     # Assign to the output anchor
     output_anchor = output_mgr["Output"]
