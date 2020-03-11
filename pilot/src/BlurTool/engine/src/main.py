@@ -29,7 +29,7 @@ factory = PluginFactory("BlurTool")
 def init(input_mgr, user_data, logger):
     """Initialize the example source tool."""
     # Get the selected value from the GUI and save it for later use in the user_data
-    user_data.val = float(input_mgr.workflow_config["Value"])
+    user_data.val = float(input_mgr.workflow_config["Sigma"])
 
     # Display info on the selected value
     logger.display_info_msg(f"The value selected is {user_data.val}")
